@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightPulse | Portal Login</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        nav h1 { font-size: 1.5rem; font-weight: 700; cursor: pointer;}
+
+        .app-view {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            animation: viewFadeIn 0.35s ease-out;
+        }
+
+        .app-view.active-view { display: block; }
+
+        @keyframes viewFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            max-width: 500px;
+            margin: 40px auto;
+        }
+
+        .survey-wrapper {
+            background: white;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .form-element {
+            margin-bottom: 22px;
+        }
+
+        .form-element label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .action-btn {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-align: center;
+        }
+
+        .action-btn:hover { background-color: #1d4ed8; }
+        .action-btn:active { transform: scale(0.98); }
+
+        .survey-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .interactive-card {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+            border-top: 5px solid #2563eb;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .interactive-card h3 { color: #1e3a8a; margin-bottom: 10px; font-size: 1.2rem; }
+        .interactive-card p { font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin-bottom: 15px; }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 8px;
+            height: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #3b82f6;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .clickable-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f9fafb;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .clickable-row:hover { 
+            background: #f3f4f6; 
+            border-color: #cbd5e1;
+        }
+
+        .clickable-row input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .metric-block { margin-bottom: 22px; }
+        .empty-bar { background: #e5e7eb; border-radius: 20px; height: 14px; width: 100%; margin-top: 6px; overflow: hidden;}
+        .colored-fill { background: #3b82f6; height: 100%; width: 0%; transition: width 0.8s ease; }
+
+        .ai-panel {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .ai-badge {
+            background: #312e81;
+            color: #c7d2fe;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .ai-insights {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1 onclick="router.goHome()">InsightPulse</h1>
+        <div id="nav-session-zone" style="display: none; align-items: center; gap: 18px;">
+            <span id="active-profile-name" style="font-weight: 500; font-size: 0.95rem; color: #e2e8f0;"></span>
+            <button onclick="auth.processLogout()" class="action-btn" style="background-color: #ef4444; padding: 6px 14px; font-size: 0.85rem;">Logout</button>
+        </div>
+    </nav>
+
+    <div id="stage-login" class="app-view active-view" style="margin-top: 40px;">
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 8px; color: #1e3a8a; font-size: 1.75rem;">System Gateway</h2>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 30px; font-size: 0.9rem;">Sign in to access your survey dashboards</p>
+            
+            <form onsubmit="auth.processLogin(event)">
+                <div class="form-element">
+                    <label for="input-user">Account Name / Email</label>
+                    <input type="text" id="input-user" placeholder="Enter any user identifier string...">
+                </div>
+                <div class="form-element">
+                    <label for="input-pass">Password</label>
+                    <input type="password" id="input-pass" placeholder="••••••••">
+                </div>
+                <button type="submit" class="action-btn" style="width: 100%; margin-top: 10px;">Authenticate & Enter Hub</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="stage-home" class="app-view">
+        <div style="margin-bottom: 10px;">
+            <h2 style="font-size: 2.1rem; color: #1e3a8a; font-weight: 800;">Research Directory</h2>
+            <p style="color: #6b7280; font-size: 1.05rem;">Select an operational survey track below to launch evaluation diagnostics.</p>
+        </div>
+        
+        <div class="survey-grid-layout" id="catalog-target-grid"></div>
+    </div>
+
+    <div id="stage-questionnaire" class="app-view">
+        <div class="survey-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button onclick="router.setView('stage-home')" class="action-btn" style="background: transparent; color: #4b5563; padding: 0; font-size: 0.9rem; font-weight: normal; box-shadow: none;">← Cancel & Return</button>
+                <span id="q-shell-step-counter" style="font-size: 0.85rem; font-weight: 600; color: #6b7280; background: #e5e7eb; padding: 4px 10px; border-radius: 20px;">Question 1 of 5</span>
+            </div>
+
+            <div class="progress-container">
+                <div id="survey-progress-bar" class="progress-bar"></div>
+            </div>
+            
+            <h2 id="q-shell-title" style="color: #1e3a8a; margin-bottom: 8px; font-size: 1.8rem;">Survey</h2>
+            <p id="q-shell-desc" style="color: #6b7280; margin-bottom: 35px; font-size: 0.95rem; line-height: 1.6;"></p>
+            
+            <form onsubmit="engine.handleFormSubmission(event)">
+                <div class="form-element">
+                    <label style="font-size: 1.25rem; color: #111827; margin-bottom: 20px; line-height: 1.4; font-weight: 700;" id="q-shell-prompt">Question Prompt</label>
+                    <div id="q-shell-choices-box"></div>
+                </div>
+                <button type="submit" id="survey-submit-button" class="action-btn" style="width: 100%; margin-top: 20px; background-color: #3b82f6; font-size: 1.05rem;">Next Question →</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="stage-report" class="app-view">
+        <div class="survey-wrapper" style="max-width: 900px;">
+            <h2 style="color: #1e3a8a; font-size: 1.8rem; margin-bottom: 4px;">Dynamic Analysis Pipeline</h2>
+            <p style="color: #6b7280; margin-bottom: 30px; font-size: 1rem;">AI Intelligence Synthesis for: <strong id="rep-shell-title" style="color:#2563eb; font-weight: 700;"></strong></p>
+            
+            <div class="ai-panel">
+                <div class="ai-badge">✨ Automated AI Metric Analysis</div>
+                <div id="ai-dynamic-analysis" class="ai-insights"></div>
+            </div>
+
+            <h3 style="color: #334155; font-size: 1.1rem; margin-bottom: 12px; font-weight: 700;">Community Sentiment Benchmarks</h3>
+            <div id="rep-shell-metrics-container" style="background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 35px;"></div>
+
+            <div style="text-align: center;">
+                <button onclick="router.setView('stage-thankyou')" class="action-btn" style="padding: 14px 40px; font-size: 1.05rem;">Submit & Save Record</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="stage-thankyou" class="app-view" style="text-align: center;">
+        <div class="card" style="max-width: 600px; padding: 55px 40px;">
+            <div style="background: #d1fae5; color: #10b981; width: 85px; height: 85px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; font-size: 2.8rem; font-weight: bold; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.1);">✓</div>
+            
+            <h2 style="color: #065f46; margin-bottom: 15px; font-size: 2.3rem; font-weight: 800;">Saved Successfully</h2>
+            <p style="color: #4b5563; line-height: 1.7; font-size: 1.05rem; margin-bottom: 35px;">Your responses have been processed and metrics logged to the core matrix arrays.</p>
+            
+            <button onclick="router.setView('stage-home')" class="action-btn" style="background-color: #1e3a8a; width: 100%;">Return to Home Dashboard</button>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 InsightPulse Systems Inc. All rights reserved.</footer>
+
+    <script>
+        // Data Registry housing your exact 10 multi-part configurations
+        const surveyMasterRegistry = [
+            {
+                id: 1, color: "#2563eb", title: "1. Student Satisfaction Survey", desc: "Assessing teaching standard indicators, learning materials, and institutional infrastructure.",
+                queries: [
+                    { q: "How satisfied are you with the quality of teaching?", options: ["Extremely Satisfied", "Moderately Satisfied", "Neutral", "Dissatisfied"] },
+                    { q: "Are the study materials provided useful?", options: ["Highly Useful", "Somewhat Useful", "Rarely Useful", "Not Useful at All"] },
+                    { q: "How would you rate the college infrastructure?", options: ["Excellent Quality", "Adequate & Functional", "Needs Improvement", "Poor / Subpar"] },
+                    { q: "Do you feel supported by faculty members?", options: ["Always Supported", "Mostly Supported", "Inconsistently Supported", "Not Supported"] },
+                    { q: "Would you recommend this institution to others?", options: ["Highly Likely", "Likely", "Unlikely", "Definitely Not"] }
+                ]
+            },
+            {
+                id: 2, color: "#8b5cf6", title: "2. Employee Satisfaction Survey", desc: "Evaluating professional role dynamics, managerial support, and corporate development options.",
+                queries: [
+                    { q: "Are you satisfied with your current job role?", options: ["Completely Satisfied", "Somewhat Satisfied", "Neutral", "Dissatisfied"] },
+                    { q: "Do you receive adequate support from management?", options: ["Exceptional Support", "Reasonable Support", "Minimal Support", "No Support"] },
+                    { q: "How would you rate your work-life balance?", options: ["Excellent Balance", "Good / Acceptable", "Fair but Demanding", "Poor / Near Burnout"] },
+                    { q: "Are growth opportunities available in your organization?", options: ["Abundant Opportunities", "Moderate Openings", "Highly Restricted", "None Available"] },
+                    { q: "Would you recommend this company as a workplace?", options: ["Enthusiastically Recommend", "Recommend Safely", "Unlikely to Recommend", "Strongly Discourage"] }
+                ]
+            },
+            {
+                id: 3, color: "#ec4899", title: "3. Customer Feedback Survey", desc: "Measuring systemic utility, issue resolution, and transactional retention benchmarks.",
+                queries: [
+                    { q: "How satisfied are you with our product/service?", options: ["Highly Delighted", "Satisfied", "Neutral Response", "Dissatisfied"] },
+                    { q: "Was your issue resolved effectively?", options: ["Perfectly Resolved", "Adequately Handled", "Unresolved Gaps Present", "Failed Completely"] },
+                    { q: "How likely are you to purchase from us again?", options: ["Definite Retention", "Probable Retention", "Unlikely Return", "Will Not Return"] },
+                    { q: "How would you rate our customer support?", options: ["Excellent / Responsive", "Adequate", "Slow Response Times", "Unhelpful / Broken"] },
+                    { q: "Would you recommend our company to others?", options: ["Highly Likely", "Likely", "Unlikely", "Never"] }
+                ]
+            },
+            {
+                id: 4, color: "#10b981", title: "4. Healthcare Patient Survey", desc: "Auditing direct medical treatment metrics, staff approachability, and facility cleanliness.",
+                queries: [
+                    { q: "How satisfied are you with the medical care received?", options: ["Exceptional Care", "Good Care", "Average Care", "Poor Care"] },
+                    { q: "Was the staff courteous and helpful?", options: ["Extremely Courteous", "Helpful", "Indifferent Staffing", "Rude / Dismissive"] },
+                    { q: "Were your concerns addressed properly?", options: ["Fully Addressed", "Mostly Addressed", "Partially Addressed", "Ignored"] },
+                    { q: "How would you rate the cleanliness of the facility?", options: ["Spotless & Clean", "Acceptable", "Needs Improvement", "Unacceptable Cleaning"] },
+                    { q: "Would you return to this hospital if needed?", options: ["Absolutely Return", "Likely Return", "Hesitant / Unsure", "Never Return"] }
+                ]
+            },
+            {
+                id: 5, color: "#f59e0b", title: "5. E-Commerce Shopping Survey", desc: "Tracking web interface navigation, product conditions, and checkout flows.",
+                queries: [
+                    { q: "Was the website easy to navigate?", options: ["Highly Intuitive", "Functional Layout", "Cluttered & Clunky", "Broken Links / Error Loops"] },
+                    { q: "How satisfied are you with product quality?", options: ["Premium Quality", "As Described", "Subpar Materials", "Unusable / Arrived Damaged"] },
+                    { q: "Was the delivery completed on time?", options: ["Ahead of Schedule", "On Time", "Delayed a Few Days", "Extremely Late / Lost"] },
+                    { q: "How would you rate the checkout process?", options: ["Seamless & Rapid", "Standard Layout", "Frustrating Design", "Failed Multi-Retries"] },
+                    { q: "Would you shop with us again?", options: ["Regular Shopper", "Likely Return", "Unlikely Return", "Never Profile Closed"] }
+                ]
+            },
+            {
+                id: 6, color: "#06b6d4", title: "6. Food Delivery Survey", desc: "Assessing order timeliness, culinary packaging integrity, and delivery behavior.",
+                queries: [
+                    { q: "Was your order delivered on time?", options: ["Ahead of Time", "Punctual Delivery", "Delayed Arrival", "Extremely Tardy"] },
+                    { q: "How would you rate the food quality?", options: ["Delicious & Fresh", "Good / Palatable", "Mediocre Standard", "Inedible / Cold"] },
+                    { q: "Was the food packaging satisfactory?", options: ["Excellent Quality", "Secure & Intact", "Messy Leakage", "Damaged / Torn Open"] },
+                    { q: "How would you rate the delivery partner's behavior?", options: ["Very Professional", "Courteous", "Impolite Actions", "Unacceptable Behavior"] },
+                    { q: "Would you use this service again?", options: ["Frequent Default Use", "Likely Use Case", "Unlikely to Use", "Never Ordering Again"] }
+                ]
+            },
+            {
+                id: 7, color: "#3b82f6", title: "7. Mobile Application Feedback Survey", desc: "Analyzing software interface clarity, crash incidents, and system stability.",
+                queries: [
+                    { q: "How easy is the app to use?", options: ["Effortless Flows", "Accessible Design", "Confusing Menu Layers", "Unusable Interface"] },
+                    { q: "Does the app meet your expectations?", options: ["Exceeds Expectations", "Matches Expectations", "Subpar Execution", "Fails Entirely"] },
+                    { q: "Have you experienced any technical issues?", options: ["Zero Bug Events", "Rare Glitches", "Frequent App Freezes", "Constant Fatal Crashes"] },
+                    { q: "Which feature do you use most frequently?", options: ["Core Core Functions", "Analytical Reporting Tool", "Account Sync Tool", "In-App Chat Layout"] },
+                    { q: "Would you recommend this app to others?", options: ["Highly Recommended", "Likely Option", "Unlikely to Suggest", "Never Share Application"] }
+                ]
+            },
+            {
+                id: 8, color: "#6366f1", title: "8. Online Learning Platform Survey", desc: "Evaluating educational structure clarity, video streaming quality, and assignment designs.",
+                queries: [
+                    { q: "Are the courses easy to understand?", options: ["Crystal Clear Logic", "Comprehensive Baseline", "Dense Academic Jargon", "Incomprehensible Layout"] },
+                    { q: "How satisfied are you with the video quality?", options: ["Stunning HD Clarity", "Crisp & Clean", "Mediocre Streaming", "Unwatchable Buffering"] },
+                    { q: "Are assignments helpful for learning?", options: ["Highly Practical", "Useful Practice Steps", "Too Much Theory", "Empty Busywork Forms"] },
+                    { q: "Do instructors explain concepts clearly?", options: ["Outstanding Instructors", "Competent Explanations", "Dry & Uninspiring", "Confusing Content Structure"] },
+                    { q: "Would you enroll in another course?", options: ["Definitely Registering", "Likely to Return", "Unlikely Choice", "Never Enrolling Again"] }
+                ]
+            },
+            {
+                id: 9, color: "#f43f5e", title: "9. Public Transportation Survey", desc: "Auditing mass transit scheduling reliability, affordability matrices, and passenger safety.",
+                queries: [
+                    { q: "How often do you use public transport?", options: ["Daily Commuter", "Weekly Usage", "Occasionally to Travel", "Rarely to Avoid Systems"] },
+                    { q: "How would you rate punctuality?", options: ["Highly Punctual", "Reliable Timings", "Inconsistent Schedules", "Chronically Late Networks"] },
+                    { q: "Is the transportation system affordable?", options: ["Very Economical", "Fairly Priced Deals", "Expensive Fares", "Exorbitant Ticket Costs"] },
+                    { q: "Do you feel safe while traveling?", options: ["Completely Safe Platforms", "Generally Secure", "Uneasy Hub Conditions", "Unsafe Environment Concerns"] },
+                    { q: "What improvements would you suggest?", options: ["Increase Ride Frequency", "Upgrade Car Fleets", "Expand Suburban Routes", "Deep Clean Transit Hubs"] }
+                ]
+            },
+            {
+                id: 10, color: "#14b8a6", title: "10. Social Media Usage Survey", desc: "Analyzing device attention capture, screen time fatigue, and focus preservation behaviors.",
+                queries: [
+                    { q: "Which social media platform do you use most?", options: ["Visual Image Feeds", "Microblog Messaging", "Direct Group Apps", "Long-Form Video Logs"] },
+                    { q: "How many hours do you spend daily on social media?", options: ["Under 1 Hour Daily", "1 to 3 Hours Daily", "3 to 5 Hours Daily", "Exceeds 5 Hours Daily"] },
+                    { q: "What is your primary purpose for using social media?", options: ["Professional Branding", "Real-Time Global News", "Family Connection Links", "Passive Discovery Streams"] },
+                    { q: "Do you believe social media affects your productivity?", options: ["No Adverse Impacts", "Minor Occasional Drag", "Noticeable Time Delays", "Severe Disruptive Footprint"] },
+                    { q: "Would you reduce your social media usage if possible?", options: ["Actively Enforcing Limits", "Open to Trimming Down", "Satisfied with Hours", "No - Crucial Utility Tool"] }
+                ]
+            }
+        ];
+
+        const aiEngineSimulator = {
+            evaluateResponseStream: function(surveyTitle, responseMatrix) {
+                let ratingWeightValue = 0;
+                responseMatrix.forEach(entry => { ratingWeightValue += (3 - entry.choiceIdx); });
+                let userCategory = ratingWeightValue >= 12 ? "Optimization Champion" : (ratingWeightValue >= 7 ? "Balanced Utilitarian" : "Structural Skeptic");
+                return `
+                    <p><strong>Operational Matrix:</strong> ${surveyTitle}</p>
+                    <p style="margin-top:8px;"><strong>Calculated Persona Track:</strong> <span style="color:#8b5cf6; font-weight:700;">${userCategory}</span></p>
+                    <br>
+                    <p><strong>AI Executive Summary Breakdown:</strong> Your response matrix hints at a clear desire for interface simplification, low transactional wait times, and robust operational predictability across daily tasks.</p>
+                `;
+            }
+        };
+
+        let activeSurveyObject = null;
+        let activeQueryPointer = 0;
+        let activeUserResponseStorage = [];
+
+        const router = {
+            setView: function(viewId) {
+                document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active-view'));
+                const targetedView = document.getElementById(viewId);
+                if(targetedView) targetedView.classList.add('active-view');
+                window.scrollTo(0,0);
+            },
+            goHome: function() { this.setView('stage-home'); }
+        };
+
+        const auth = {
+            processLogin: function(e) {
+                if(e) e.preventDefault();
+                let nameValue = document.getElementById('input-user').value.trim();
+                if(!nameValue) nameValue = "Guest Analyst";
+                
+                localStorage.setItem('survey_user', nameValue);
+                this.syncNavbar();
+                engine.generateCatalog();
+                
+                // Routes directly to Home View Catalog
+                router.setView('stage-home');
+            },
+            processLogout: function() {
+                localStorage.removeItem('survey_user');
+                document.getElementById('input-user').value = "";
+                document.getElementById('input-pass').value = "";
+                this.syncNavbar();
+                router.setView('stage-login');
+            },
+            syncNavbar: function() {
+                const sessionUser = localStorage.getItem('survey_user');
+                const userBoxZone = document.getElementById('nav-session-zone');
+                if(sessionUser) {
+                    document.getElementById('active-profile-name').innerText = `👤 Session: ${sessionUser}`;
+                    userBoxZone.style.display = "flex";
+                } else {
+                    userBoxZone.style.display = "none";
+                }
+            }
+        };
+
+        const engine = {
+            generateCatalog: function() {
+                const catalogContainer = document.getElementById('catalog-target-grid');
+                catalogContainer.innerHTML = "";
+                surveyMasterRegistry.forEach(survey => {
+                    const card = document.createElement('div');
+                    card.className = "interactive-card";
+                    card.style.borderTopColor = survey.color;
+                    card.innerHTML = `
+                        <div>
+                            <h3>${survey.title}</h3>
+                            <p>${survey.desc}</p>
+                        </div>
+                        <button onclick="engine.initiateSurveySequence(${survey.id})" class="action-btn" style="background-color: ${survey.color}; padding: 9px 18px; font-size:0.85rem; align-self: flex-start;">Begin Track</button>
+                    `;
+                    catalogContainer.appendChild(card);
+                });
+            },
+            initiateSurveySequence: function(id) {
+                activeSurveyObject = surveyMasterRegistry.find(s => s.id === id);
+                if(!activeSurveyObject) return;
+                activeQueryPointer = 0;
+                activeUserResponseStorage = [];
+                document.getElementById('q-shell-title').innerText = activeSurveyObject.title;
+                document.getElementById('q-shell-desc').innerText = activeSurveyObject.desc;
+                this.renderActiveQueryStep();
+                router.setView('stage-questionnaire');
+            },
+            renderActiveQueryStep: function() {
+                const targetQuery = activeSurveyObject.queries[activeQueryPointer];
+                const totalQueriesCount = activeSurveyObject.queries.length;
+                document.getElementById('q-shell-step-counter').innerText = `Question ${activeQueryPointer + 1} of ${totalQueriesCount}`;
+                document.getElementById('survey-progress-bar').style.width = `${(activeQueryPointer / totalQueriesCount) * 100}%`;
+                
+                const submitBtn = document.getElementById('survey-submit-button');
+                submitBtn.innerText = activeQueryPointer === totalQueriesCount - 1 ? "Compile Diagnostics ✨" : "Next Question →";
+                submitBtn.style.backgroundColor = activeQueryPointer === totalQueriesCount - 1 ? "#10b981" : "#3b82f6";
+                document.getElementById('q-shell-prompt').innerText = targetQuery.q;
+
+                const choicesBox = document.getElementById('q-shell-choices-box');
+                choicesBox.innerHTML = "";
+                targetQuery.options.forEach((opt, index) => {
+                    choicesBox.innerHTML += `
+                        <label class="clickable-row">
+                            <input type="radio" name="stepChoice" value="${index}" ${index === 0 ? 'checked' : ''}>
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+            },
+            handleFormSubmission: function(e) {
+                e.preventDefault();
+                const selectedRadio = document.querySelector('input[name="stepChoice"]:checked');
+                const choiceIdx = parseInt(selectedRadio.value);
+                activeUserResponseStorage.push({ choiceIdx: choiceIdx });
+                activeQueryPointer++;
+                if(activeQueryPointer < activeSurveyObject.queries.length) {
+                    this.renderActiveQueryStep();
+                } else {
+                    document.getElementById('survey-progress-bar').style.width = "100%";
+                    this.compileAndDisplayAIReport();
+                }
+            },
+            compileAndDisplayAIReport: function() {
+                document.getElementById('rep-shell-title').innerText = activeSurveyObject.title;
+                document.getElementById('ai-dynamic-analysis').innerHTML = aiEngineSimulator.evaluateResponseStream(activeSurveyObject.title, activeUserResponseStorage);
+                const metricsContainer = document.getElementById('rep-shell-metrics-container');
+                metricsContainer.innerHTML = "";
+                const lastResponse = activeUserResponseStorage[activeUserResponseStorage.length - 1];
+                let theoreticalWeights = [48, 31, 14, 7];
+                if (lastResponse.choiceIdx === 1) theoreticalWeights = [24, 52, 16, 8];
+                if (lastResponse.choiceIdx === 2) theoreticalWeights = [11, 19, 58, 12];
+                if (lastResponse.choiceIdx === 3) theoreticalWeights = [8, 12, 21, 59];
+                const finalQueryObject = activeSurveyObject.queries[activeSurveyObject.queries.length - 1];
+                
+                metricsContainer.innerHTML += `<p style="font-size:0.95rem; font-weight:700; color:#4b5563; margin-bottom:15px; border-left:3px solid #2563eb; padding-left:8px;">Metrics Comparison for: "${finalQueryObject.q}"</p>`;
+                finalQueryObject.options.forEach((opt, idx) => {
+                    const didUserSelectThis = idx === lastResponse.choiceIdx;
+                    const displayPercent = theoreticalWeights[idx];
+                    metricsContainer.innerHTML += `
+                        <div class="metric-block">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: ${didUserSelectThis ? '700' : '500'}; color: ${didUserSelectThis ? '#10b981' : '#27272a'};">
+                                <span>${opt} ${didUserSelectThis ? '<b style="color:#10b981; margin-left:6px;">(Your Answer)</b>' : ''}</span>
+                                <span>${displayPercent}%</span>
+                            </div>
+                            <div class="empty-bar"><div class="colored-fill" id="bar-fill-${idx}" style="background-color: ${didUserSelectThis ? '#10b981' : activeSurveyObject.color}; width: 0%;"></div></div>
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        const fillEl = document.getElementById(`bar-fill-${idx}`);
+                        if(fillEl) fillEl.style.width = `${displayPercent}%`;
+                    }, 100);
+                });
+                router.setView('stage-report');
+            }
+        };
+
+        // Forces application viewport straight to the login card view container upon initial DOM boot
+        window.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('survey_user'); // Hard reset validation state drops
+            auth.syncNavbar();
+            router.setView('stage-login');
+        });
+    </script>
+</body>
+</html>
